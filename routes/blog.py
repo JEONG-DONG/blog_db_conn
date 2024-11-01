@@ -137,14 +137,13 @@ def update_blog(request: Request, id: int,
                 conn: Connection = Depends(context_get_conn)):
   
   try: 
-    sql_text = f"""
+    sql = f"""
       UPDATE blog
       SET title = :title, author = :author, content = :content  
       where id = :id
     """
-    print(sql_text)
-    bind_stmt = text(sql_text).bindparams(id=id, title=title, author=author, content=content)
-    print(bind_stmt)
+    bind_stmt = text(sql).bindparams(id=id, title=title, 
+                                          author=author, content=content)
     result = conn.execute(bind_stmt)
 
     # 수정된 레코드 수가 0이면 404 에러 발생 => 수정할 레코드가 없음
@@ -161,7 +160,33 @@ def update_blog(request: Request, id: int,
       conn.rollback()  # 변경사항 롤백(보류중인 모든 데이터 변경 사항 취소, 트랜잭션 종료)
       raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                           detail="요청 서비스가 내부적인 문제로 잠시 제공할 수 없습니다.")
-        
+  
+
+@router.post("/delete/{id}")
+def delete_blog(request: Request, id: int,
+                conn: Connection = Depends(context_get_conn)):   
+
+  try:
+    sql = f"""
+      DELETE FROM blog 
+      where id = :id
+    """
+    bind_stmt = text(sql).bindparams(id=id)
+    result = conn.execute(bind_stmt)
+
+    # 삭제할 레코드가 없음
+    if result.rowcount == 0:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"해당 id({id})가(은) 존재하지 않습니다.")
+    
+    conn.commit() # 변경사항 저장
+    return RedirectResponse(url=f"/blogs", 
+                            status_code=status.HTTP_303_SEE_OTHER)
+  except SQLAlchemyError as e:
+      print(e)
+      conn.rollback()
+      raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                          detail="요청 서비스가 내부적인 문제로 잠시 제공할 수 없습니다.")  
     
 
 
