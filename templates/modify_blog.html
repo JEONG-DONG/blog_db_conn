@@ -7,7 +7,7 @@
 </head>
 <body>
     <div>
-      <form action="/blog/modify/{{id}}" method="post">
+      <form action="/blogs/modify/{{id}}" method="post">
           <div style="margin-bottom: 20px">
             <label for="title">제목:</label>
             <input type="text" id="title" name="title" value="{{ title }}" style="width: 20rem;">
@@ -18,7 +18,7 @@
           </div>
           <div style="margin-bottom: 20px">
               <label for="content">내용:</label>
-              <textarea name="content" rows="5" cols="50">{{ content }}</textarea>
+              <textarea name="content" rows="10" cols="50">{{ content }}</textarea>
           </div>
           <button>블로그 수정</button>
       </form>
