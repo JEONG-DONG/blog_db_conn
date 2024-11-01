@@ -188,5 +188,34 @@ def delete_blog(request: Request, id: int,
       raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                           detail="요청 서비스가 내부적인 문제로 잠시 제공할 수 없습니다.")  
     
+@router.get("/new")
+def create_blog_ui(request: Request):
+  return templates.TemplateResponse(
+      request=request,
+      name="create_blog.html",
+      context={})
 
+@router.post("/new")
+def create_blog(request: Request,
+                title: str = Form(min_length=2, max_length=200),
+                author: str = Form(max_length=100),
+                content: str = Form(min_length=2, max_length=4000),
+                conn: Connection = Depends(context_get_conn)
+                ):
+  try:
+     sql = f"""
+      INSERT INTO blog (title, author, content, modified_dt)
+      values ('{title}', '{author}', '{content}', now())
+      """
+     print(sql)
+     
+     conn.execute(text(sql))
+     conn.commit()
+     return RedirectResponse(url="/blogs", status_code=status.HTTP_303_SEE_OTHER)
+  
+  except SQLAlchemyError as e:
+      print(e)
+      conn.rollback()
+      raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                          detail="요청 서비스가 내부적인 문제로 잠시 제공할 수 없습니다.")
 

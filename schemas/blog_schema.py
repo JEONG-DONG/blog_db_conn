@@ -14,7 +14,7 @@ class Blog(BlogInput):
   id: int
   modified_dt: datetime
 
-# DB에서 정보를 가져올 때 사용하는 클래스
+
 @dataclass
 class  BlogData:
     id: int
