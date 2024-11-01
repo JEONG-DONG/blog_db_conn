@@ -93,6 +93,43 @@ def get_blog_by_id(request: Request, id: int,
                             detail="알수없는 이유로 서비스 오류가 발생했습니다.")
 
 
-# @router.get("/new")
+@router.get("/modify/{id}")
+def update_blog_ui(request: Request, id: int,
+                   conn: Connection = Depends(context_get_conn)):
+    try:
+        query = """
+            SELECT id, title, author, content, image_loc, modified_dt FROM blog 
+            WHERE id = :id
+        """
+        stmt = text(query)
+        bind_stmt = stmt.bindparams(id=id)
+        result = conn.execute(bind_stmt)
+        
+        # 검색 결과 있는지 확인, 없을 경우 404 에러 발생
+        if result.rowcount == 0:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="해당 블로그 정보(ID)가 없습니다.")
+        
+        row = result.fetchone()
+        result.close()
 
+        return templates.TemplateResponse(
+            request=request,
+            name="modify_blog.html",
+            context={"id": row.id, "title": row.title, "author": row.author, 
+                     "content": row.content})
 
+    except SQLAlchemyError as e:
+        print(e)
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                            detail="요청 서비스가 내부적인 문제로 잠시 제공할 수 없습니다.")
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail="알수없는 이유로 서비스 오류가 발생했습니다.")
+    
+
+@router.post("/modify/{id}")
+def update_blog(
+    
+):
