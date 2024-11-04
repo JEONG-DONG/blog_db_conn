@@ -4,10 +4,16 @@ from sqlalchemy.pool import QueuePool, NullPool
 from fastapi import status
 from fastapi.exceptions import HTTPException
 from datetime import datetime
+from dotenv import load_dotenv
+import os
 
 
 # database connection URL
-DATABASE_CONN = "mysql+mysqlconnector://root:1234@localhost:3306/blog_db"
+# DATABASE_CONN = "mysql+mysqlconnector://root:1234@localhost:3306/blog_db"
+
+# .env 파일에서 환경변수를 가져옴
+load_dotenv()
+DATABASE_CONN = os.getenv("DATABASE_CONN")
 
 # create engine
 engine = create_engine(DATABASE_CONN, 

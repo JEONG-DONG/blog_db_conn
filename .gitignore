@@ -1,0 +1,10 @@
+# .env 파일 제외하고 모든 파일을 커밋합니다.
+.env
+
+# node_modules 폴더를 제외하고 모든 파일을 커밋합니다.
+/node_modules
+/build
+
+# 특정 폴더의 텍스트 파일 제외
+logs/*.log
+bin/*.txt
