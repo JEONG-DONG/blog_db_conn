@@ -13,7 +13,7 @@ from utils.util import truncate_text
 router = APIRouter(prefix="/blogs", tags=["blogs"])
 
 # jinja2 template 엔진 생성
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory="templates/blogs")
 
 @router.get("/")
 async def get_all_blogs(request: Request):
